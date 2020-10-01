@@ -1,0 +1,102 @@
+---
+title: "Data Manipulation"
+output: github_document
+---
+
+# Setup
+
+```{r, setup}
+library(tidyverse)
+```
+
+## Load in FAS_Litters dataframe
+
+```{r}
+litters_df = read_csv(file = "./data/FAS_litters.csv")
+litters_df = janitor::clean_names(litters_df)
+```
+
+## select
+
+Choose some columns and not others.
+
+```{r}
+select(litters_df, group, litter_number, gd0_weight:gd_of_birth)
+```
+
+If we want to remove a variable.
+```{r}
+select(litters_df, -group)
+```
+
+Rename a column and select it
+```{r}
+select(litters_df, GROUP = group)
+```
+
+Just rename a column.
+
+```{r}
+rename(litters_df, GROUP = group)
+```
+
+Select helpers
+
+```{r}
+select(litters_df, starts_with("gd"))
+```
+
+Relocate to the beginning and not do anything else
+```{r}
+relocate(litters_df, litter_number)
+```
+## Filter
+
+Filter operates on ROWS 
+
+```{r}
+filter(litters_df, gd0_weight <22)
+```
+
+Make it equal to 22
+```{r}
+filter(litters_df, gd0_weight ==22)
+```
+
+Make it everything except when it equals 22
+
+```{r}
+filter(litters_df, !(gd0_weight == 22))
+```
+
+Filter and select multiple character rows 
+
+```{r}
+filter(litters_df, group %in% c("Con7", "Mod8"))
+```
+
+## Mutate
+
+```{r}
+mutate(
+  litters_df,
+  wt_gain = gd18_weight - gd0_weight
+  )
+```
+
+## Arrange
+
+```{r}
+arrange(litters_df, pups_born_alive)
+```
+## %>%
+
+```{r}
+litters_df = 
+  read_csv("./data/FAS_litters.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-pups_survive) %>% 
+  mutate(wt_gain = gd18_weight - gd0_weight) %>% 
+  drop_na(gd0_weight)
+```
+
