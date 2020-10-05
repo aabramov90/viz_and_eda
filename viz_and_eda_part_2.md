@@ -187,3 +187,167 @@ weather_df %>%
     ## Warning: Removed 15 rows containing missing values (geom_point).
 
 ![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+Themes
+
+Shift the legend position
+
+``` r
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+Change the overall theme.
+
+``` r
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  theme_minimal()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  ggthemes::theme_fivethirtyeight()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+## Setting options
+
+``` r
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6
+  fig.width = .6,
+  out.width = "90%"
+)
+
+theme_set(
+  ggthemes::theme_fivethirtyeight() + theme(legend.position = "bottom")
+  )
+
+options(
+  ggplot2.continuous.colour = "viridis"
+  ggplot2.continuous.colour = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Data args in geom
+
+Here you can see how one data in the geom\_point is DIFFERENT from the
+geom\_line by creating a second/ separate dataset.
+
+``` r
+central_park =
+  weather_df %>% 
+  filter(name == "CentralPark_NY")
+
+waikiki =
+  weather_df %>% 
+  filter(name == "Waikiki_HA")
+
+ggplot(data = waikiki, aes(x = date, y = tmax, color = name)) +
+    geom_point() +
+    geom_line(data = central_park)
+```
+
+    ## Warning: Removed 3 rows containing missing values (geom_point).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+## `patchwork`
+
+Remember faceting?
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = 0.5) +
+  facet_grid(. ~ name)
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_density).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+What happens when you want multi panel plots, but can’t facet?
+
+``` r
+tmax_tmin_p =
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  theme(legend.position = "none")
+
+prcp_dens_p = 
+  weather_df %>% 
+  filter(prcp > 0) %>% 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = 0.5) +
+  theme(legend.position = "none")
+
+tmax_date_p = 
+  weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "none")
+
+(tmax_tmin_p + prcp_dens_p) / tmax_date_p
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 3 rows containing missing values (geom_point).
+
+![](viz_and_eda_part_2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
