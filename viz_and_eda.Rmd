@@ -59,3 +59,58 @@ weather_plot =
 weather_plot + geom_point()
 ```
 
+## Advanced scatterplot...  
+Start with the same one and make it fancy
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+```
+
+What about the aes placement?
+So if you move the aes to the second line, it only defines the colors to the point, but not the smooth
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name)) +
+  geom_smooth()
+```
+
+Let's facet!
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point() +
+  geom_smooth(se= FALSE) +
+  facet_grid(. ~ name)
+```
+
+Coloring, customization
+
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .2, size = .3) +
+  geom_smooth(se= FALSE, size = 2) +
+  facet_grid(. ~ name)
+```
+
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax, alpha = tmin, color = name)) + 
+  geom_point() +
+  geom_smooth(se= FALSE, size = 2) +
+  facet_grid(. ~ name)
+```
+
+Let's combine elements and try a new plot.
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
