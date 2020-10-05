@@ -109,3 +109,84 @@ weather_df %>%
     name = "Location",
     discrete = TRUE)
 ```
+
+Themes
+
+Shift the legend position
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  theme(legend.position = "bottom")
+```
+
+Change the overall theme.
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  theme_minimal()
+```
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE) +
+  ggthemes::theme_fivethirtyeight()
+```
+
+## Setting options
+
+```{r, eval = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6
+  fig.width = .6,
+  out.width = "90%"
+)
+
+theme_set(
+  ggthemes::theme_fivethirtyeight() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis"
+  ggplot2.continuous.colour = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+
+
+```
+
