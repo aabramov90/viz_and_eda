@@ -7,14 +7,14 @@ Visualization and EDA
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ───────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ────────────────────────────────────────────────── tidyverse 1.3.0 ──
 
     ## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     ## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
     ## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
     ## ✓ readr   1.3.1     ✓ forcats 0.5.0
 
-    ## ── Conflicts ──────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -63,3 +63,61 @@ weather_df =
     ## date created (size, mb): 2020-10-05 09:40:58 (0.88)
 
     ## file min/max dates: 1999-09-01 / 2020-10-31
+
+``` r
+weather_df
+```
+
+    ## # A tibble: 1,095 x 6
+    ##    name           id          date        prcp  tmax  tmin
+    ##    <chr>          <chr>       <date>     <dbl> <dbl> <dbl>
+    ##  1 CentralPark_NY USW00094728 2017-01-01     0   8.9   4.4
+    ##  2 CentralPark_NY USW00094728 2017-01-02    53   5     2.8
+    ##  3 CentralPark_NY USW00094728 2017-01-03   147   6.1   3.9
+    ##  4 CentralPark_NY USW00094728 2017-01-04     0  11.1   1.1
+    ##  5 CentralPark_NY USW00094728 2017-01-05     0   1.1  -2.7
+    ##  6 CentralPark_NY USW00094728 2017-01-06    13   0.6  -3.8
+    ##  7 CentralPark_NY USW00094728 2017-01-07    81  -3.2  -6.6
+    ##  8 CentralPark_NY USW00094728 2017-01-08     0  -3.8  -8.8
+    ##  9 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9
+    ## 10 CentralPark_NY USW00094728 2017-01-10     0   7.8  -6  
+    ## # … with 1,085 more rows
+
+## Scatterplots\!\!
+
+Create a first scatterplot ever.
+
+``` r
+ggplot(weather_df, aes(x = tmin, y  = tmax)) + 
+  geom_point()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+New approach, same plot
+
+``` r
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+Save and edit a plot object.
+
+``` r
+weather_plot = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax))
+
+weather_plot + geom_point()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->

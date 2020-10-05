@@ -28,5 +28,34 @@ weather_df =
     tmin = tmin / 10,
     tmax = tmax / 10) %>%
   select(name, id, everything())
+
+weather_df
+```
+
+## Scatterplots!!
+
+Create a first scatterplot ever.
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y  = tmax)) + 
+  geom_point()
+```
+
+New approach, same plot
+
+```{r}
+weather_df  %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+Save and edit a plot object.
+
+```{r}
+weather_plot = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax))
+
+weather_plot + geom_point()
 ```
 
