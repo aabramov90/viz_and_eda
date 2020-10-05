@@ -1,6 +1,6 @@
 ---
 title: "Visualization and EDA"
-subtitle: "Part 2"
+subtitle: "Part II"
 output: github_document
 ---
 
@@ -8,7 +8,7 @@ output: github_document
 
 ```{r, setup}
 library(tidyverse)
-library(ggridges)
+library(patchwork)
 library(hexbin)
 ```
 
@@ -32,3 +32,25 @@ weather_df =
 
 weather_df
 ```
+
+## Remember this plot?
+```{r}
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5)
+```
+
+## Add Labels
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x= tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Daily Temperature (C)",
+    y = "Maximum Daily Temperature (C)",
+    caption = "Data from the rnoaa package; temperatures in 2017."
+  )
+```
+
