@@ -1,0 +1,220 @@
+---
+title: "Exploratory Analysis"
+subtitle: "Part III"
+output: github_document
+---
+
+# Setup
+
+```{r, setup}
+library(tidyverse)
+library(patchwork)
+library(hexbin)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.height = 6,
+  out.width = "90%"
+)
+
+theme_set(
+  ggthemes::theme_fivethirtyeight() + theme(legend.position = "bottom")
+  )
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.colour = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+# Load the weather data
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Waikiki_HA",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = "month")) %>%
+  select(name, id, everything())
+
+weather_df
+```
+
+## group_by
+
+Here now we have defined three groups, a new grouping structure.
+
+```{r}
+weather_df %>% 
+  group_by(name, month)
+```
+
+And now ungroup at the end.
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  ungroup()
+```
+
+## counting things
+
+Counting month observations
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(n_obs = n())
+```
+
+Group by name
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(n_obs = n())
+```
+
+We can use count
+
+```{r}
+weather_df %>% 
+  count(name, month, name = "n_obs")
+```
+
+Other helpful counters
+
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    n_obs = n(),
+    n_days = n_distinct(date))
+```
+
+## A digression 2x2 tables
+
+```{r}
+weather_df %>% 
+  filter(name != "Waikiki_HA") %>% 
+  mutate(
+    cold = case_when(
+      tmax < 5 ~ "cold",
+      tmax >= 5 ~ "not_cold",
+      TRUE ~ "")) %>% 
+  group_by(name, cold) %>% 
+  summarize(count = n())
+```
+
+Another way to do it!
+```{r}
+weather_df %>% 
+  filter(name != "Waikiki_HA") %>% 
+  mutate(
+    cold = case_when(
+      tmax < 5 ~ "cold",
+      tmax >= 5 ~ "not_cold",
+      TRUE ~ "")) %>% 
+  janitor::tabyl(name, cold)
+```
+
+## General Summaries
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    mean_prcp = mean(prcp, na.rm = TRUE),
+    media_tmin = median(tmin, na.rm = TRUE)
+  )
+```
+
+This is a dataframe!  
+The `group by` and `summarize` are creating a nice new dataset for us to plot.  
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    mean_prcp = mean(prcp, na.rm = TRUE),
+    media_tmin = median(tmin, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point() +
+  geom_line()
+```
+
+Suppose you want to summarize many columns in the same way.
+Use the across function!
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(across(prcp:tmin, mean))
+```
+
+Just a reminder, sometimes your data results are easier to read in another format!
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(mean_tmax = mean(tmax)) %>% 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) %>% 
+  knitr::kable(digits = 1)
+```
+
+## group_by and mutate
+
+So here we have grouped, and then created a new column with the mean and now plotted the values as a difference from the mean
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) %>% 
+  ggplot(aes(x = date, y= centered_tmax, color = name)) +
+  geom_point()
+```
+
+What about window functions?
+So here we have grouped by name and then assigned relative ranks among the tmax variable, then we looked at the tmax of every month.
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(
+    temp_rank = min_rank(tmax)) %>% 
+  filter(temp_rank ==1)
+```
+
+lag
+Here we are taking the values, and then it creates a new column with the value, down a row, or however many you want. 
+Does yesterday's temp predict today's?
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(lag_temp = lag(tmax))
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(temp_change = tmax - lag(tmax)) %>% 
+  summarize(
+    temp_change_max = max(temp_change, na.rm = TRUE),
+    temp_change_sd = sd(temp_change, na.rm = TRUE))
+```
