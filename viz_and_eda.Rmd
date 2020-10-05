@@ -9,6 +9,7 @@ output: github_document
 ```{r, setup}
 library(tidyverse)
 library(ggridges)
+library(hexbin)
 ```
 
 # Data Input
@@ -113,4 +114,113 @@ weather_df %>%
   geom_smooth(se = FALSE) +
   facet_grid(. ~ name)
 ```
+
+How many goems have to exist?
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+You can use a neat geom!
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_density2d() +
+  geom_point(alpha = 0.3)
+```
+
+Univariate plots
+
+Histograms are really great.
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin)) +
+  geom_histogram()
+```
+
+Can we add color?
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram(position = "dodge")
+```
+
+A bit confusing, let's facet it?
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+Let's try a new geometry.
+Density is like a histogram, filled in with smooth edges.
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = 0.5)
+```
+
+What about box plots?
+Note that there is a categorical variable on the x axis!  This works for boxplots.  
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin)) +
+  geom_boxplot()
+```
+
+Trendy plots :-)
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin()
+```
+
+Add a statistic
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin(alpha = 0.5) +
+  stat_summary(fun = "median")
+```
+
+Trendy Ridgeplots :-)
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = name, fill = name)) + 
+  geom_density_ridges()
+```
+
+Let's save a scatterplot.
+
+```{r}
+weather_plot = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5)
+
+ggsave("weather_plot.pdf", weather_plot)
+```
+
+What about embedding?
+```{r, fig.width=6, fig.height=3}
+weather_plot 
+```
+
+```{r, fig.width=12, fig.height=6}
+weather_plot 
+```
+
 

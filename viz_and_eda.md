@@ -20,6 +20,7 @@ library(tidyverse)
 
 ``` r
 library(ggridges)
+library(hexbin)
 ```
 
 # Data Input
@@ -228,3 +229,189 @@ weather_df %>%
     ## Warning: Removed 3 rows containing missing values (geom_point).
 
 ![](viz_and_eda_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+How many goems have to exist?
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_smooth).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+You can use a neat geom\!
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_binhex).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_density2d() +
+  geom_point(alpha = 0.3)
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_density2d).
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+Univariate plots
+
+Histograms are really great.
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin)) +
+  geom_histogram()
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+Can we add color?
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram(position = "dodge")
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+A bit confusing, let’s facet it?
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+Let’s try a new geometry. Density is like a histogram, filled in with
+smooth edges.
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = 0.5)
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_density).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+What about box plots? Note that there is a categorical variable on the x
+axis\! This works for boxplots.
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin)) +
+  geom_boxplot()
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_boxplot).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+Trendy plots :-)
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin()
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_ydensity).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+Add a statistic
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin(alpha = 0.5) +
+  stat_summary(fun = "median")
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_ydensity).
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_summary).
+
+    ## Warning: Removed 3 rows containing missing values (geom_segment).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+Trendy Ridgeplots :-)
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = name, fill = name)) + 
+  geom_density_ridges()
+```
+
+    ## Picking joint bandwidth of 1.67
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_density_ridges).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+Let’s save a scatterplot.
+
+``` r
+weather_plot = 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5)
+
+ggsave("weather_plot.pdf", weather_plot)
+```
+
+    ## Saving 7 x 5 in image
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+What about embedding?
+
+``` r
+weather_plot 
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+weather_plot 
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+![](viz_and_eda_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
