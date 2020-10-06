@@ -218,3 +218,8 @@ weather_df %>%
     temp_change_max = max(temp_change, na.rm = TRUE),
     temp_change_sd = sd(temp_change, na.rm = TRUE))
 ```
+
+## Quick note
+
+Summarize only gets you so far
+
